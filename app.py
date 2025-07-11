@@ -44,30 +44,33 @@ with tab2:
             with st.container():
                 cols = st.columns([1, 3])
 
-                try:
-                    gambar = row.get("gambar", "")
-                    if isinstance(gambar, str) and os.path.isfile(gambar):
-                        cols[0].image(gambar, use_container_width=True)
-                except:
-                    cols[0].markdown("*[Gagal memuat gambar]*")
+                # Gambar
+                gambar = row["gambar"] if "gambar" in df.columns and pd.notna(row["gambar"]) else ""
+                if isinstance(gambar, str) and os.path.isfile(gambar):
+                    cols[0].image(gambar, use_container_width=True)
+                else:
+                    cols[0].markdown("*[Tidak ada gambar]*")
 
-                judul = row.get("judul", "-")
-                harga = row.get("harga", "-")
-                kategori = row.get("kategori", "-")
-                deskripsi = row.get("deskripsi", "-")
-                waktu = row.get("waktu", "-")
+                # Informasi Iklan
+                judul = row["judul"] if "judul" in df.columns and pd.notna(row["judul"]) else "-"
+                harga = row["harga"] if "harga" in df.columns and pd.notna(row["harga"]) else "-"
+                kategori = row["kategori"] if "kategori" in df.columns and pd.notna(row["kategori"]) else "-"
+                deskripsi = row["deskripsi"] if "deskripsi" in df.columns and pd.notna(row["deskripsi"]) else "-"
+                waktu = row["waktu"] if "waktu" in df.columns and pd.notna(row["waktu"]) else "-"
 
                 cols[1].markdown(f"### {judul}")
                 cols[1].markdown(f"**Harga:** {harga}")
                 cols[1].markdown(f"**Kategori:** {kategori}")
                 cols[1].markdown(deskripsi)
 
-                kontak = row.get("kontak", "")
+                # Kontak
+                kontak = row["kontak"] if "kontak" in df.columns and pd.notna(row["kontak"]) else ""
                 if isinstance(kontak, str) and kontak.strip():
                     nomor = kontak.replace("+", "").replace(" ", "")
                     cols[1].markdown("**📞 Pemesanan:**")
                     cols[1].markdown(
                         f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
                     )
+
                 cols[1].caption(f"🕒 {waktu}")
                 st.markdown("---")

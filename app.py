@@ -1,61 +1,60 @@
 import streamlit as st
 import pandas as pd
 import os
-from utils.helpers import load_iklan, save_iklan, save_image
 
-st.set_page_config(page_title="Pasar Suryaloka Keling", layout="wide")
+st.set_page_config(page_title="Pasar Digital Desa Keling", layout="wide")
 
-st.title("🛍️ Pasar Suryaloka Keling")
-st.caption("Platform Iklan Produk & Jasa Warga Desa Keling")
+st.title("🛒 Pasar Digital Desa Keling")
+st.markdown("Selamat datang di etalase UMKM & Iklan Produk Desa Keling!")
 
-tab1, tab2 = st.tabs(["📝 Posting Iklan", "🛒 Etalase Pasar"])
+# === Load data toko ===
+@st.cache_data
+def load_data():
+    file_path = "data/toko.csv"  # Pastikan file ini ada di folder /data/
+    if not os.path.exists(file_path):
+        st.warning("File data/toko.csv tidak ditemukan.")
+        return pd.DataFrame(columns=['nama_toko', 'alamat', 'deskripsi', 'kontak'])
+    df = pd.read_csv(file_path)
+    return df.fillna("")
 
-with tab1:
-    st.subheader("Form Posting Iklan Baru")
-    with st.form("iklan_form", clear_on_submit=True):
-        judul = st.text_input("Judul Iklan")
-        deskripsi = st.text_area("Deskripsi")
-        harga = st.number_input("Harga (Rp)", min_value=0, step=1000)
-        kategori = st.selectbox("Kategori", ["Pertanian", "Peternakan", "Jasa", "Barang Bekas", "Lainnya"])
-        kontak = st.text_input("Kontak (Nomor WA)")
-        gambar = st.file_uploader("Upload Gambar", type=["jpg", "png", "jpeg"])
-        submitted = st.form_submit_button("✅ Posting")
+df = load_data()
 
-        if submitted and judul and gambar:
-            image_path = save_image(gambar)
-            iklan = {
-                "judul": judul,
-                "deskripsi": deskripsi,
-                "harga": f"Rp {harga:,.0f}".replace(",", "."),
-                "kategori": kategori,
-                "kontak": kontak,
-                "gambar": image_path,
-                "waktu": pd.Timestamp.now()
-            }
-            save_iklan(iklan)
-            st.success("✅ Iklan berhasil diposting!")
+# === Tampilkan setiap iklan/toko ===
+for i, row in df.iterrows():
+    st.markdown("---")
+    cols = st.columns([4, 1])
 
-with tab2:
-    st.subheader("Etalase Iklan Terbaru")
-    df = load_iklan()
-    if df.empty:
-        st.info("Belum ada iklan yang diposting.")
-    else:
-        for _, row in df[::-1].iterrows():
-            with st.container():
-                cols = st.columns([1, 3])
-                if row["gambar"] and os.path.exists(row["gambar"]):
-                    cols[0].image(row["gambar"], use_container_width=True)
-                cols[1].markdown(f"### {row['judul']}")
-                cols[1].markdown(f"**Harga:** {row['harga']}")
-                cols[1].markdown(f"**Kategori:** {row['kategori']}")
-                cols[1].markdown(f"{row['deskripsi']}")
+    with cols[0]:
+        st.subheader(row['nama_toko'])
+        st.markdown(f"📍 {row['alamat']}")
+        if row['deskripsi']:
+            st.markdown(f"📝 {row['deskripsi']}")
 
-                # WhatsApp link aman
-                kontak = str(row["kontak"]) if pd.notna(row["kontak"]) else ""
-                if kontak:
-                    nomor = kontak.replace("+", "").replace(" ", "")
-                    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")
+    with cols[1]:
+        kontak_raw = row.get('kontak', '')
+        kontak_str = str(kontak_raw) if pd.notnull(kontak_raw) else ''
+        kontak_wa = kontak_str.replace('+', '').replace(' ', '')
 
-                cols[1].caption(f"🕒 {row['waktu']}")
-                st.markdown("---")
+        if kontak_wa:
+            wa_link = f"https://wa.me/{kontak_wa}"
+            wa_button = f"""
+            <a href="{wa_link}" target="_blank" style="text-decoration: none;">
+                <button style="
+                    background-color: #25D366;
+                    color: white;
+                    padding: 8px 12px;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    cursor: pointer;
+                ">
+                    📱 WhatsApp
+                </button>
+            </a>
+            """
+            st.markdown(wa_button, unsafe_allow_html=True)
+        else:
+            st.markdown("📵 Kontak tidak tersedia")
+
+st.markdown("---")
+st.caption("Developed by CV. Mitra Utama Consultindo (MUC)")

@@ -45,26 +45,26 @@ with tab2:
             with st.container():
                 cols = st.columns([1, 3])
 
-                # Tampilkan gambar jika tersedia
-                if pd.notna(row["gambar"]) and os.path.exists(str(row["gambar"])):
-                    cols[0].image(str(row["gambar"]), use_container_width=True)
+                # Gambar
+                gambar = str(row["gambar"]).strip() if "gambar" in row and pd.notna(row["gambar"]) else ""
+                if gambar and os.path.exists(gambar):
+                    cols[0].image(gambar, use_container_width=True)
 
-                # Ambil nilai aman dari setiap kolom
-                judul = str(row["judul"]).strip() if pd.notna(row["judul"]) else "-"
-                harga = str(row["harga"]).strip() if pd.notna(row["harga"]) else "-"
-                kategori = str(row["kategori"]).strip() if pd.notna(row["kategori"]) else "-"
-                deskripsi = str(row["deskripsi"]).strip() if pd.notna(row["deskripsi"]) else "-"
-                waktu = str(row["waktu"]).strip() if pd.notna(row["waktu"]) else "-"
+                # Data aman (cek kolom dan isi)
+                judul = str(row["judul"]).strip() if "judul" in row and pd.notna(row["judul"]) else "-"
+                harga = str(row["harga"]).strip() if "harga" in row and pd.notna(row["harga"]) else "-"
+                kategori = str(row["kategori"]).strip() if "kategori" in row and pd.notna(row["kategori"]) else "-"
+                deskripsi = str(row["deskripsi"]).strip() if "deskripsi" in row and pd.notna(row["deskripsi"]) else "-"
+                waktu = str(row["waktu"]).strip() if "waktu" in row and pd.notna(row["waktu"]) else "-"
 
-                # Tampilkan konten
                 cols[1].markdown(f"### {judul}")
                 cols[1].markdown(f"**Harga:** {harga}")
                 cols[1].markdown(f"**Kategori:** {kategori}")
                 cols[1].markdown(deskripsi)
 
-                # Tampilkan WhatsApp jika ada
+                # Kontak WA aman
                 try:
-                    kontak = str(row["kontak"]).strip()
+                    kontak = str(row["kontak"]).strip() if "kontak" in row and pd.notna(row["kontak"]) else ""
                     if kontak and kontak.lower() != "nan":
                         nomor = kontak.replace("+", "").replace(" ", "")
                         cols[1].markdown("**📞 Pemesanan:** Hubungi nomor berikut:")

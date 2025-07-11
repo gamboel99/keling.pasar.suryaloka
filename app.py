@@ -51,14 +51,17 @@ with tab2:
                 cols[1].markdown(f"**Kategori:** {row['kategori']}")
                 cols[1].markdown(f"{row['deskripsi']}")
 
-                # ✅ Pemesanan WhatsApp dengan icon
-                kontak = row["kontak"]
-                if pd.notna(kontak) and str(kontak).strip() != "":
-                    nomor = str(kontak).replace("+", "").replace(" ", "")
-                    cols[1].markdown("**📞 Pemesanan:** Hubungi nomor berikut:")
-                    cols[1].markdown(
-                        f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
-                    )
+                # ✅ Pemesanan via WhatsApp dengan ikon, anti-error
+                try:
+                    kontak = str(row["kontak"]).strip()
+                    if kontak and kontak.lower() != "nan":
+                        nomor = kontak.replace("+", "").replace(" ", "")
+                        cols[1].markdown("**📞 Pemesanan:** Hubungi nomor berikut:")
+                        cols[1].markdown(
+                            f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
+                        )
+                except:
+                    pass
 
                 cols[1].caption(f"🕒 {row['waktu']}")
                 st.markdown("---")

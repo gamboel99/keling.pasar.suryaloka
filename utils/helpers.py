@@ -5,7 +5,6 @@ from PIL import Image, UnidentifiedImageError
 from datetime import datetime
 
 DATA_PATH = "data/iklan.csv"
-IMAGE_DIR = "images/"
 
 def load_iklan():
     if os.path.exists(DATA_PATH):
@@ -20,10 +19,10 @@ def save_iklan(data):
     df.to_csv(DATA_PATH, index=False)
 
 def save_image(uploaded_file):
-    os.makedirs(IMAGE_DIR, exist_ok=True)
+    os.makedirs(".", exist_ok=True)
     try:
-        filename = datetime.now().strftime("%Y%m%d%H%M%S_") + uploaded_file.name.replace(" ", "_")
-        filepath = os.path.join(IMAGE_DIR, filename)
+        filename = datetime.now().strftime("uploaded_%Y%m%d%H%M%S_") + uploaded_file.name.replace(" ", "_")
+        filepath = filename  # simpan di root folder, bukan subfolder
         image = Image.open(uploaded_file)
         image.save(filepath)
         return filepath

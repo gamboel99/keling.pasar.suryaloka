@@ -45,7 +45,7 @@ with tab2:
         for _, row in df[::-1].iterrows():
             with st.container():
                 cols = st.columns([1, 3])
-                if os.path.exists(row["gambar"]):
+                if row["gambar"] and os.path.exists(row["gambar"]):
                     cols[0].image(row["gambar"], use_column_width=True)
                 cols[1].markdown(f"### {row['judul']}")
                 cols[1].markdown(f"**Harga:** {row['harga']}")

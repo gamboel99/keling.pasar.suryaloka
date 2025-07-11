@@ -43,14 +43,13 @@ with tab2:
         st.info("Belum ada iklan yang diposting.")
     else:
         for _, row in df[::-1].iterrows():
-            with st.container():
-    # Gambar (jika ada)
+           with st.container():
+    # Gambar
     try:
         gambar = str(row["gambar"]).strip() if pd.notna(row["gambar"]) else ""
-        if gambar and os.path.isfile(gambar):
-            st.image(gambar, use_container_width=True)
+        st.image(gambar, use_container_width=True)
     except:
-        pass  # gambar error, diamkan saja
+        pass
 
     # Informasi iklan
     judul = str(row["judul"]).strip() if pd.notna(row["judul"]) else "-"
@@ -74,4 +73,3 @@ with tab2:
 
     st.caption(f"🕒 {waktu}")
     st.markdown("---")
-    

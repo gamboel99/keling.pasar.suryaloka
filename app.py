@@ -9,6 +9,7 @@ st.caption("Platform Iklan Produk & Jasa Warga Desa Keling")
 
 tab1, tab2 = st.tabs(["📝 Posting Iklan", "🛒 Etalase Pasar"])
 
+# Form posting iklan
 with tab1:
     st.subheader("Form Posting Iklan Baru")
     with st.form("iklan_form", clear_on_submit=True):
@@ -34,6 +35,7 @@ with tab1:
             save_iklan(iklan)
             st.success("✅ Iklan berhasil diposting!")
 
+# Tampilkan etalase
 with tab2:
     st.subheader("Etalase Iklan Terbaru")
     df = load_iklan()
@@ -45,27 +47,30 @@ with tab2:
                 cols = st.columns([1, 3])
 
                 # Gambar
-                gambar = row["gambar"] if "gambar" in df.columns and pd.notna(row["gambar"]) else ""
-                if isinstance(gambar, str) and os.path.isfile(gambar):
-                    cols[0].image(gambar, use_container_width=True)
-                else:
-                    cols[0].markdown("*[Tidak ada gambar]*")
+                try:
+                    gambar = str(row["gambar"]).strip() if pd.notna(row["gambar"]) else ""
+                    if gambar and os.path.exists(gambar):
+                        cols[0].image(gambar, use_container_width=True)
+                    else:
+                        cols[0].markdown("*[Tidak ada gambar]*")
+                except:
+                    cols[0].markdown("*[Gagal memuat gambar]*")
 
-                # Informasi Iklan
-                judul = row["judul"] if "judul" in df.columns and pd.notna(row["judul"]) else "-"
-                harga = row["harga"] if "harga" in df.columns and pd.notna(row["harga"]) else "-"
-                kategori = row["kategori"] if "kategori" in df.columns and pd.notna(row["kategori"]) else "-"
-                deskripsi = row["deskripsi"] if "deskripsi" in df.columns and pd.notna(row["deskripsi"]) else "-"
-                waktu = row["waktu"] if "waktu" in df.columns and pd.notna(row["waktu"]) else "-"
+                # Data Iklan
+                judul = str(row["judul"]).strip() if pd.notna(row["judul"]) else "-"
+                harga = str(row["harga"]).strip() if pd.notna(row["harga"]) else "-"
+                kategori = str(row["kategori"]).strip() if pd.notna(row["kategori"]) else "-"
+                deskripsi = str(row["deskripsi"]).strip() if pd.notna(row["deskripsi"]) else "-"
+                waktu = str(row["waktu"]).strip() if pd.notna(row["waktu"]) else "-"
 
                 cols[1].markdown(f"### {judul}")
                 cols[1].markdown(f"**Harga:** {harga}")
                 cols[1].markdown(f"**Kategori:** {kategori}")
                 cols[1].markdown(deskripsi)
 
-                # Kontak
-                kontak = row["kontak"] if "kontak" in df.columns and pd.notna(row["kontak"]) else ""
-                if isinstance(kontak, str) and kontak.strip():
+                # Kontak WhatsApp
+                kontak = str(row["kontak"]).strip() if pd.notna(row["kontak"]) else ""
+                if kontak:
                     nomor = kontak.replace("+", "").replace(" ", "")
                     cols[1].markdown("**📞 Pemesanan:**")
                     cols[1].markdown(

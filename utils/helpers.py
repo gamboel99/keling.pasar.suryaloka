@@ -1,27 +1,31 @@
 import os
 import pandas as pd
 from PIL import Image
-import uuid
 
-DATA_PATH = "data/iklan.csv"
-IMG_DIR = "data/gambar"
-os.makedirs(IMG_DIR, exist_ok=True)
+DATA_FILE = "data/iklan.csv"
+IMAGE_DIR = "data/uploads"
+os.makedirs(IMAGE_DIR, exist_ok=True)
+os.makedirs("data", exist_ok=True)
 
-def load_iklan():
-    if os.path.exists(DATA_PATH):
-        return pd.read_csv(DATA_PATH)
+def load_data():
+    if os.path.exists(DATA_FILE):
+        try:
+            return pd.read_csv(DATA_FILE)
+        except Exception:
+            return pd.DataFrame(columns=["judul", "deskripsi", "harga", "kategori", "kontak", "gambar"])
     else:
-        return pd.DataFrame(columns=["judul", "deskripsi", "harga", "kategori", "kontak", "gambar", "waktu"])
+        return pd.DataFrame(columns=["judul", "deskripsi", "harga", "kategori", "kontak", "gambar"])
 
-def save_iklan(data):
-    df = load_iklan()
+def save_data(data):
+    df = load_data()
     df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
-    df.to_csv(DATA_PATH, index=False)
+    df.to_csv(DATA_FILE, index=False)
 
 def save_image(uploaded_file):
-    ext = uploaded_file.name.split('.')[-1]
-    filename = f"{uuid.uuid4()}.{ext}"
-    filepath = os.path.join(IMG_DIR, filename)
-    image = Image.open(uploaded_file)
-    image.save(filepath)
-    return filepath
+    """Simpan gambar yang diunggah ke folder uploads/"""
+    if uploaded_file is not None:
+        filepath = os.path.join(IMAGE_DIR, uploaded_file.name)
+        image = Image.open(uploaded_file)
+        image.save(filepath)
+        return filepath
+    return ""

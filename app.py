@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import os
@@ -46,18 +45,20 @@ with tab2:
             with st.container():
                 cols = st.columns([1, 3])
                 if row["gambar"] and os.path.exists(row["gambar"]):
-                    cols[0].image(row["gambar"], use_column_width=True)
+                    cols[0].image(row["gambar"], use_container_width=True)
                 cols[1].markdown(f"### {row['judul']}")
                 cols[1].markdown(f"**Harga:** {row['harga']}")
                 cols[1].markdown(f"**Kategori:** {row['kategori']}")
                 cols[1].markdown(f"{row['deskripsi']}")
-                if row["kontak"]:
-                   kontak = row["kontak"]
-if pd.notna(kontak) and str(kontak).strip() != "":
-    nomor = str(kontak).replace("+", "").replace(" ", "")
-    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")
 
-if kontak and kontak.lower() != "nan":
-    nomor = kontak.replace("+", "").replace(" ", "")
-    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")
+                # ✅ Pemesanan WhatsApp dengan icon
+                kontak = row["kontak"]
+                if pd.notna(kontak) and str(kontak).strip() != "":
+                    nomor = str(kontak).replace("+", "").replace(" ", "")
+                    cols[1].markdown("**📞 Pemesanan:** Hubungi nomor berikut:")
+                    cols[1].markdown(
+                        f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
+                    )
+
+                cols[1].caption(f"🕒 {row['waktu']}")
                 st.markdown("---")

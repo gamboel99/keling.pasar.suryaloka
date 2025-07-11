@@ -44,38 +44,34 @@ with tab2:
     else:
         for _, row in df[::-1].iterrows():
             with st.container():
-                cols = st.columns([1, 3])
+    # Gambar (jika ada)
+    try:
+        gambar = str(row["gambar"]).strip() if pd.notna(row["gambar"]) else ""
+        if gambar and os.path.isfile(gambar):
+            st.image(gambar, use_container_width=True)
+    except:
+        pass  # gambar error, diamkan saja
 
-                # Gambar
-                try:
-                    gambar = str(row["gambar"]).strip() if pd.notna(row["gambar"]) else ""
-                    if gambar and os.path.exists(gambar):
-                        cols[0].image(gambar, use_container_width=True)
-                    else:
-                        cols[0].markdown("*[Tidak ada gambar]*")
-                except:
-                    cols[0].markdown("*[Gagal memuat gambar]*")
+    # Informasi iklan
+    judul = str(row["judul"]).strip() if pd.notna(row["judul"]) else "-"
+    harga = str(row["harga"]).strip() if pd.notna(row["harga"]) else "-"
+    kategori = str(row["kategori"]).strip() if pd.notna(row["kategori"]) else "-"
+    deskripsi = str(row["deskripsi"]).strip() if pd.notna(row["deskripsi"]) else "-"
+    waktu = str(row["waktu"]).strip() if pd.notna(row["waktu"]) else "-"
 
-                # Data Iklan
-                judul = str(row["judul"]).strip() if pd.notna(row["judul"]) else "-"
-                harga = str(row["harga"]).strip() if pd.notna(row["harga"]) else "-"
-                kategori = str(row["kategori"]).strip() if pd.notna(row["kategori"]) else "-"
-                deskripsi = str(row["deskripsi"]).strip() if pd.notna(row["deskripsi"]) else "-"
-                waktu = str(row["waktu"]).strip() if pd.notna(row["waktu"]) else "-"
+    st.markdown(f"### {judul}")
+    st.markdown(f"**Harga:** {harga}")
+    st.markdown(f"**Kategori:** {kategori}")
+    st.markdown(deskripsi)
 
-                cols[1].markdown(f"### {judul}")
-                cols[1].markdown(f"**Harga:** {harga}")
-                cols[1].markdown(f"**Kategori:** {kategori}")
-                cols[1].markdown(deskripsi)
+    kontak = str(row["kontak"]).strip() if pd.notna(row["kontak"]) else ""
+    if kontak:
+        nomor = kontak.replace("+", "").replace(" ", "")
+        st.markdown("**📞 Pemesanan:**")
+        st.markdown(
+            f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
+        )
 
-                # Kontak WhatsApp
-                kontak = str(row["kontak"]).strip() if pd.notna(row["kontak"]) else ""
-                if kontak:
-                    nomor = kontak.replace("+", "").replace(" ", "")
-                    cols[1].markdown("**📞 Pemesanan:**")
-                    cols[1].markdown(
-                        f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
-                    )
-
-                cols[1].caption(f"🕒 {waktu}")
-                st.markdown("---")
+    st.caption(f"🕒 {waktu}")
+    st.markdown("---")
+    

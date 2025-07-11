@@ -9,7 +9,9 @@ st.caption("Platform Iklan Produk & Jasa Warga Desa Keling")
 
 tab1, tab2 = st.tabs(["📝 Posting Iklan", "🛒 Etalase Pasar"])
 
-# ====== FORM POSTING IKLAN ======
+# ======================
+# TAB 1: Form Posting
+# ======================
 with tab1:
     st.subheader("Form Posting Iklan Baru")
     with st.form("iklan_form", clear_on_submit=True):
@@ -17,7 +19,7 @@ with tab1:
         deskripsi = st.text_area("Deskripsi")
         harga = st.number_input("Harga (Rp)", min_value=0, step=1000)
         kategori = st.selectbox("Kategori", ["Pertanian", "Peternakan", "Jasa", "Barang Bekas", "Lainnya"])
-        kontak = st.text_input("Kontak (Nomor WA)")
+        kontak = st.text_input("Kontak (Nomor WhatsApp)")
         gambar = st.file_uploader("Upload Gambar", type=["jpg", "jpeg", "png"])
         submit = st.form_submit_button("✅ Posting")
 
@@ -35,7 +37,9 @@ with tab1:
             save_iklan(iklan)
             st.success("✅ Iklan berhasil diposting!")
 
-# ====== ETALASE IKLAN ======
+# ======================
+# TAB 2: Etalase Pasar
+# ======================
 with tab2:
     st.subheader("Etalase Iklan Terbaru")
     df = load_iklan()
@@ -45,29 +49,29 @@ with tab2:
     else:
         for _, row in df[::-1].iterrows():
             with st.container():
-                # Ambil semua data dengan aman
-                judul = str(row["judul"]) if "judul" in row and pd.notna(row["judul"]) else "-"
-                harga = str(row["harga"]) if "harga" in row and pd.notna(row["harga"]) else "-"
-                kategori = str(row["kategori"]) if "kategori" in row and pd.notna(row["kategori"]) else "-"
-                deskripsi = str(row["deskripsi"]) if "deskripsi" in row and pd.notna(row["deskripsi"]) else "-"
-                waktu = str(row["waktu"]) if "waktu" in row and pd.notna(row["waktu"]) else "-"
-                kontak = str(row["kontak"]) if "kontak" in row and pd.notna(row["kontak"]) else ""
-                gambar = str(row["gambar"]) if "gambar" in row and pd.notna(row["gambar"]) else ""
+                # Ambil data aman
+                gambar = str(row["gambar"]) if "gambar" in df.columns and pd.notna(row["gambar"]) else ""
+                judul = str(row["judul"]) if "judul" in df.columns and pd.notna(row["judul"]) else "-"
+                harga = str(row["harga"]) if "harga" in df.columns and pd.notna(row["harga"]) else "-"
+                kategori = str(row["kategori"]) if "kategori" in df.columns and pd.notna(row["kategori"]) else "-"
+                deskripsi = str(row["deskripsi"]) if "deskripsi" in df.columns and pd.notna(row["deskripsi"]) else "-"
+                waktu = str(row["waktu"]) if "waktu" in df.columns and pd.notna(row["waktu"]) else "-"
+                kontak = str(row["kontak"]) if "kontak" in df.columns and pd.notna(row["kontak"]) else ""
 
-                # Tampilkan gambar (jika ada)
+                # Tampilkan gambar
                 try:
                     if gambar:
                         st.image(gambar, use_container_width=True)
                 except:
                     pass
 
-                # Tampilkan informasi iklan
+                # Tampilkan isi iklan
                 st.markdown(f"### {judul}")
                 st.markdown(f"**Harga:** {harga}")
                 st.markdown(f"**Kategori:** {kategori}")
                 st.markdown(deskripsi)
 
-                # Tampilkan kontak WhatsApp (jika ada)
+                # Kontak WA
                 if kontak:
                     nomor = kontak.replace("+", "").replace(" ", "")
                     st.markdown("**📞 Pemesanan:**")

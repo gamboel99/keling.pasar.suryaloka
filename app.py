@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import os
@@ -13,7 +14,6 @@ UPLOAD_DIR = "data/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs("data", exist_ok=True)
 
-# Fungsi bantu
 def load_data():
     try:
         return pd.read_csv(DATA_FILE)
@@ -25,12 +25,10 @@ def save_data(entry):
     df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
     df.to_csv(DATA_FILE, index=False)
 
-# Menu
 menu = st.sidebar.radio("Navigasi", ["📝 Posting Iklan", "🛍️ Etalase Pasar"])
 
 if menu == "📝 Posting Iklan":
     st.subheader("Form Iklan Baru")
-
     with st.form("form_iklan"):
         judul = st.text_input("Judul Iklan")
         deskripsi = st.text_area("Deskripsi")

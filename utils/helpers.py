@@ -1,3 +1,4 @@
+
 import os
 import pandas as pd
 from PIL import Image, UnidentifiedImageError
@@ -18,9 +19,10 @@ def save_iklan(data):
     df.to_csv(DATA_PATH, index=False)
 
 def save_image(uploaded_file):
+    os.makedirs(".", exist_ok=True)
     try:
         filename = datetime.now().strftime("uploaded_%Y%m%d%H%M%S_") + uploaded_file.name.replace(" ", "_")
-        filepath = filename  # Simpan langsung di root folder
+        filepath = filename  # simpan di root folder, bukan subfolder
         image = Image.open(uploaded_file)
         image.save(filepath)
         return filepath

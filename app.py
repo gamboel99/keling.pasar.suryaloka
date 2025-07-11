@@ -52,7 +52,11 @@ with tab2:
                 cols[1].markdown(f"**Kategori:** {row['kategori']}")
                 cols[1].markdown(f"{row['deskripsi']}")
                 if row["kontak"]:
-                    kontak = str(row.get("kontak", "")).strip()
+                   kontak = row["kontak"]
+if pd.notna(kontak) and str(kontak).strip() != "":
+    nomor = str(kontak).replace("+", "").replace(" ", "")
+    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")
+
 if kontak and kontak.lower() != "nan":
     nomor = kontak.replace("+", "").replace(" ", "")
     cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")

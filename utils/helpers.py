@@ -1,10 +1,11 @@
-
 import os
 import pandas as pd
-from PIL import Image, UnidentifiedImageError
-from datetime import datetime
+from PIL import Image
+import uuid
 
 DATA_PATH = "data/iklan.csv"
+IMG_DIR = "data/gambar"
+os.makedirs(IMG_DIR, exist_ok=True)
 
 def load_iklan():
     if os.path.exists(DATA_PATH):
@@ -13,18 +14,14 @@ def load_iklan():
         return pd.DataFrame(columns=["judul", "deskripsi", "harga", "kategori", "kontak", "gambar", "waktu"])
 
 def save_iklan(data):
-    os.makedirs(os.path.dirname(DATA_PATH), exist_ok=True)
     df = load_iklan()
     df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
     df.to_csv(DATA_PATH, index=False)
 
 def save_image(uploaded_file):
-    os.makedirs(".", exist_ok=True)
-    try:
-        filename = datetime.now().strftime("uploaded_%Y%m%d%H%M%S_") + uploaded_file.name.replace(" ", "_")
-        filepath = filename  # simpan di root folder, bukan subfolder
-        image = Image.open(uploaded_file)
-        image.save(filepath)
-        return filepath
-    except UnidentifiedImageError:
-        return None
+    ext = uploaded_file.name.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = os.path.join(IMG_DIR, filename)
+    image = Image.open(uploaded_file)
+    image.save(filepath)
+    return filepath

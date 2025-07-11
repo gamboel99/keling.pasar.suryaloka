@@ -4,7 +4,6 @@ import os
 from utils.helpers import load_iklan, save_iklan, save_image
 
 st.set_page_config(page_title="Pasar Suryaloka Keling", layout="wide")
-
 st.title("🛍️ Pasar Suryaloka Keling")
 st.caption("Platform Iklan Produk & Jasa Warga Desa Keling")
 
@@ -37,12 +36,7 @@ with tab1:
 
 with tab2:
     st.subheader("Etalase Iklan Terbaru")
-    try:
-        df = load_iklan()
-    except:
-        st.warning("⚠️ Gagal memuat data iklan.")
-        df = pd.DataFrame()
-
+    df = load_iklan()
     if df.empty:
         st.info("Belum ada iklan yang diposting.")
     else:
@@ -50,42 +44,30 @@ with tab2:
             with st.container():
                 cols = st.columns([1, 3])
 
-                # Gambar
                 try:
-                    if os.path.exists(str(row["gambar"])):
-                        cols[0].image(str(row["gambar"]), use_container_width=True)
+                    gambar = row.get("gambar", "")
+                    if isinstance(gambar, str) and os.path.isfile(gambar):
+                        cols[0].image(gambar, use_container_width=True)
                 except:
-                    pass
+                    cols[0].markdown("*[Gagal memuat gambar]*")
 
-                # Info
-                def safe(val):
-                    try:
-                        return str(val).strip() if pd.notna(val) else "-"
-                    except:
-                        return "-"
-
-                judul = safe(row.get("judul"))
-                harga = safe(row.get("harga"))
-                kategori = safe(row.get("kategori"))
-                deskripsi = safe(row.get("deskripsi"))
-                waktu = safe(row.get("waktu"))
+                judul = row.get("judul", "-")
+                harga = row.get("harga", "-")
+                kategori = row.get("kategori", "-")
+                deskripsi = row.get("deskripsi", "-")
+                waktu = row.get("waktu", "-")
 
                 cols[1].markdown(f"### {judul}")
                 cols[1].markdown(f"**Harga:** {harga}")
                 cols[1].markdown(f"**Kategori:** {kategori}")
                 cols[1].markdown(deskripsi)
 
-                # Kontak
-                try:
-                    kontak = safe(row.get("kontak"))
-                    if kontak and kontak.lower() != "nan":
-                        nomor = kontak.replace("+", "").replace(" ", "")
-                        cols[1].markdown("**📞 Pemesanan:**")
-                        cols[1].markdown(
-                            f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
-                        )
-                except:
-                    pass
-
+                kontak = row.get("kontak", "")
+                if isinstance(kontak, str) and kontak.strip():
+                    nomor = kontak.replace("+", "").replace(" ", "")
+                    cols[1].markdown("**📞 Pemesanan:**")
+                    cols[1].markdown(
+                        f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
+                    )
                 cols[1].caption(f"🕒 {waktu}")
                 st.markdown("---")

@@ -37,7 +37,12 @@ with tab1:
 
 with tab2:
     st.subheader("Etalase Iklan Terbaru")
-    df = load_iklan()
+    try:
+        df = load_iklan()
+    except:
+        st.warning("⚠️ Gagal memuat data iklan.")
+        df = pd.DataFrame()
+
     if df.empty:
         st.info("Belum ada iklan yang diposting.")
     else:
@@ -52,33 +57,27 @@ with tab2:
                 except:
                     pass
 
-                # Judul
-                try:
-                    cols[1].markdown(f"### {str(row['judul'])}")
-                except:
-                    cols[1].markdown("### -")
+                # Info
+                def safe(val):
+                    try:
+                        return str(val).strip() if pd.notna(val) else "-"
+                    except:
+                        return "-"
 
-                # Harga
-                try:
-                    cols[1].markdown(f"**Harga:** {str(row['harga'])}")
-                except:
-                    cols[1].markdown("**Harga:** -")
+                judul = safe(row.get("judul"))
+                harga = safe(row.get("harga"))
+                kategori = safe(row.get("kategori"))
+                deskripsi = safe(row.get("deskripsi"))
+                waktu = safe(row.get("waktu"))
 
-                # Kategori
-                try:
-                    cols[1].markdown(f"**Kategori:** {str(row['kategori'])}")
-                except:
-                    cols[1].markdown("**Kategori:** -")
+                cols[1].markdown(f"### {judul}")
+                cols[1].markdown(f"**Harga:** {harga}")
+                cols[1].markdown(f"**Kategori:** {kategori}")
+                cols[1].markdown(deskripsi)
 
-                # Deskripsi
+                # Kontak
                 try:
-                    cols[1].markdown(str(row['deskripsi']))
-                except:
-                    cols[1].markdown("-")
-
-                # Kontak WA
-                try:
-                    kontak = str(row['kontak']).strip()
+                    kontak = safe(row.get("kontak"))
                     if kontak and kontak.lower() != "nan":
                         nomor = kontak.replace("+", "").replace(" ", "")
                         cols[1].markdown("**📞 Pemesanan:**")
@@ -88,10 +87,5 @@ with tab2:
                 except:
                     pass
 
-                # Waktu
-                try:
-                    cols[1].caption(f"🕒 {str(row['waktu'])}")
-                except:
-                    cols[1].caption("🕒 -")
-
+                cols[1].caption(f"🕒 {waktu}")
                 st.markdown("---")

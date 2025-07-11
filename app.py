@@ -44,14 +44,18 @@ with tab2:
         for _, row in df[::-1].iterrows():
             with st.container():
                 cols = st.columns([1, 3])
+
+                # Gambar
                 if row["gambar"] and os.path.exists(row["gambar"]):
                     cols[0].image(row["gambar"], use_container_width=True)
+
+                # Info iklan
                 cols[1].markdown(f"### {row['judul']}")
                 cols[1].markdown(f"**Harga:** {row['harga']}")
                 cols[1].markdown(f"**Kategori:** {row['kategori']}")
                 cols[1].markdown(f"{row['deskripsi']}")
 
-                # ✅ Pemesanan via WhatsApp dengan ikon, anti-error
+                # Kontak WA (anti error)
                 try:
                     kontak = str(row["kontak"]).strip()
                     if kontak and kontak.lower() != "nan":
@@ -60,8 +64,8 @@ with tab2:
                         cols[1].markdown(
                             f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
                         )
-                except:
-                    pass
+                except Exception as e:
+                    cols[1].warning("Kontak tidak tersedia atau rusak.")
 
                 cols[1].caption(f"🕒 {row['waktu']}")
                 st.markdown("---")

@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import os
@@ -46,12 +45,17 @@ with tab2:
             with st.container():
                 cols = st.columns([1, 3])
                 if row["gambar"] and os.path.exists(row["gambar"]):
-                    cols[0].image(row["gambar"], use_column_width=True)
+                    cols[0].image(row["gambar"], use_container_width=True)
                 cols[1].markdown(f"### {row['judul']}")
                 cols[1].markdown(f"**Harga:** {row['harga']}")
                 cols[1].markdown(f"**Kategori:** {row['kategori']}")
                 cols[1].markdown(f"{row['deskripsi']}")
-                if row["kontak"]:
-                    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{row['kontak'].replace('+', '').replace(' ', '')})")
+
+                # WhatsApp link aman
+                kontak = str(row["kontak"]) if pd.notna(row["kontak"]) else ""
+                if kontak:
+                    nomor = kontak.replace("+", "").replace(" ", "")
+                    cols[1].markdown(f"[📱 Hubungi via WhatsApp](https://wa.me/{nomor})")
+
                 cols[1].caption(f"🕒 {row['waktu']}")
                 st.markdown("---")

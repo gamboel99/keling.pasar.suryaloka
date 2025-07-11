@@ -4,14 +4,12 @@ import os
 from PIL import Image
 import uuid
 
-# Setup
 st.set_page_config(page_title="Toko Online Keling", layout="wide")
 
 DATA_PATH = "data/iklan.csv"
 IMG_DIR = "data/gambar"
 os.makedirs(IMG_DIR, exist_ok=True)
 
-# Fungsi bantu
 def load_data():
     if os.path.exists(DATA_PATH):
         return pd.read_csv(DATA_PATH)
@@ -30,7 +28,6 @@ def save_image(uploaded_file):
     Image.open(uploaded_file).save(filepath)
     return filepath
 
-# ------------------ TAMPILAN ATAS ------------------
 st.markdown("""
 <div style="background-color:#f63d30; padding:20px; border-radius:5px;">
     <h1 style="color:white; text-align:center;">🛍️ Toko Online Keling</h1>
@@ -38,10 +35,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ------------------ TAB ------------------
 tab1, tab2 = st.tabs(["🛍️ Etalase Produk", "➕ Tambah Produk"])
 
-# ------------------ ETALASE ------------------
 with tab1:
     df = load_data()
     st.markdown("## 📦 Etalase Produk")
@@ -60,7 +55,6 @@ with tab1:
                     no_wa = kontak.replace("+", "").replace(" ", "")
                     deskripsi = row["deskripsi"] if pd.notna(row["deskripsi"]) else ""
 
-                    # Gambar
                     if img and os.path.exists(img):
                         st.image(img, use_container_width=True)
                     st.markdown(f"### {judul}")
@@ -79,7 +73,6 @@ with tab1:
                 except:
                     st.warning("⚠️ Error menampilkan produk")
 
-# ------------------ FORM INPUT ------------------
 with tab2:
     st.markdown("## ➕ Tambah Produk Baru")
     with st.form("form_produk", clear_on_submit=True):

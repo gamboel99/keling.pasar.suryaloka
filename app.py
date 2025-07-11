@@ -3,93 +3,78 @@ import pandas as pd
 import os
 from PIL import Image
 
+st.set_page_config(page_title="Pasar Suryaloka Keling", layout="wide")
+
+st.title("🛒 Pasar Suryaloka Keling")
+st.caption("Etalase Iklan Produk & Jasa Warga Desa Keling")
+
 DATA_FILE = "data/iklan.csv"
 UPLOAD_DIR = "data/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs("data", exist_ok=True)
 
-st.set_page_config(page_title="Pasar Suryaloka Keling", layout="wide")
-
-st.markdown("<h1>🛒 Pasar Suryaloka Keling</h1>", unsafe_allow_html=True)
-st.caption("Platform Iklan Produk & Jasa Warga Desa Keling")
-
-menu = st.sidebar.radio("📌 Navigasi", ["📤 Posting Iklan", "🛍️ Etalase Pasar"])
-
-# ----------------------------
 # Fungsi bantu
-# ----------------------------
 def load_data():
-    if os.path.exists(DATA_FILE):
+    try:
         return pd.read_csv(DATA_FILE)
-    else:
+    except:
         return pd.DataFrame(columns=["judul", "deskripsi", "harga", "kategori", "kontak", "gambar"])
 
-def save_data(data):
+def save_data(entry):
     df = load_data()
-    df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
     df.to_csv(DATA_FILE, index=False)
 
-# ----------------------------
-# Posting Iklan
-# ----------------------------
-if menu == "📤 Posting Iklan":
-    st.subheader("Form Posting Iklan Baru")
+# Menu
+menu = st.sidebar.radio("Navigasi", ["📝 Posting Iklan", "🛍️ Etalase Pasar"])
+
+if menu == "📝 Posting Iklan":
+    st.subheader("Form Iklan Baru")
 
     with st.form("form_iklan"):
         judul = st.text_input("Judul Iklan")
         deskripsi = st.text_area("Deskripsi")
         harga = st.number_input("Harga (Rp)", min_value=0)
-        kategori = st.selectbox("Kategori", ["Pertanian", "Peternakan", "Perikanan", "Kuliner", "Jasa", "Lainnya"])
-        kontak = st.text_input("Kontak (Nomor WA)")
+        kategori = st.selectbox("Kategori", ["Pertanian", "Peternakan", "UMKM", "Jasa", "Lainnya"])
+        kontak = st.text_input("Kontak WhatsApp")
         gambar = st.file_uploader("Upload Gambar", type=["jpg", "jpeg", "png"])
+        submit = st.form_submit_button("Simpan")
 
-        submitted = st.form_submit_button("✅ Simpan Iklan")
+    if submit:
+        img_path = ""
+        if gambar:
+            img_path = os.path.join(UPLOAD_DIR, gambar.name)
+            with open(img_path, "wb") as f:
+                f.write(gambar.getbuffer())
 
-        if submitted:
-            if judul and deskripsi and kontak:
-                # Simpan gambar
-                filename = ""
-                if gambar:
-                    filename = os.path.join(UPLOAD_DIR, gambar.name)
-                    with open(filename, "wb") as f:
-                        f.write(gambar.read())
+        save_data({
+            "judul": judul,
+            "deskripsi": deskripsi,
+            "harga": harga,
+            "kategori": kategori,
+            "kontak": kontak,
+            "gambar": img_path
+        })
+        st.success("Iklan berhasil disimpan!")
 
-                save_data({
-                    "judul": judul,
-                    "deskripsi": deskripsi,
-                    "harga": harga,
-                    "kategori": kategori,
-                    "kontak": kontak,
-                    "gambar": filename
-                })
-                st.success("Iklan berhasil diposting!")
-            else:
-                st.warning("Silakan lengkapi semua field yang diperlukan!")
-
-# ----------------------------
-# Etalase Pasar
-# ----------------------------
 if menu == "🛍️ Etalase Pasar":
-    st.subheader("Etalase Pasar Warga Desa")
-
+    st.subheader("Etalase Iklan")
     df = load_data()
-
     if df.empty:
-        st.info("Belum ada iklan ditambahkan.")
+        st.info("Belum ada iklan.")
     else:
         for i, row in df.iterrows():
             with st.container():
-                cols = st.columns([1, 2])
-                if row["gambar"] and os.path.exists(str(row["gambar"])):
-                    cols[0].image(row["gambar"], use_container_width=True)
+                col1, col2 = st.columns([1, 2])
+                if isinstance(row.get("gambar"), str) and os.path.exists(row["gambar"]):
+                    col1.image(row["gambar"], use_container_width=True)
                 else:
-                    cols[0].markdown("*[Gambar tidak tersedia]*")
+                    col1.markdown("*Tidak ada gambar*")
 
-                # Info Iklan
-                with cols[1]:
-                    st.markdown(f"### {row['judul']}")
-                    st.markdown(f"**Kategori:** {row['kategori']}")
-                    st.markdown(f"**Harga:** Rp {int(row['harga']):,}")
-                    st.markdown(f"**Deskripsi:** {row['deskripsi']}")
-                    nomor = str(row['kontak']).replace("+", "").replace(" ", "")
-                    st.markdown(f"[📱 Pemesanan via WhatsApp](https://wa.me/{nomor})")
-                st.markdown("---")
+                col2.markdown(f"### {row.get('judul', '-')}")
+                col2.markdown(f"**Rp {int(row.get('harga', 0)):,}**")
+                col2.markdown(f"Kategori: {row.get('kategori', '-')}")
+                col2.markdown(row.get("deskripsi", "-"))
+                kontak = str(row.get("kontak", "")).replace("+", "").replace(" ", "")
+                if kontak:
+                    col2.markdown(f"[📱 Pesan via WhatsApp](https://wa.me/{kontak})")

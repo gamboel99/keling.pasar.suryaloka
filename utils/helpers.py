@@ -7,6 +7,14 @@ from datetime import datetime
 DATA_PATH = "data/iklan.csv"
 IMAGE_DIR = "images/"
 
+def save_image(uploaded_file):
+    os.makedirs(IMAGE_DIR, exist_ok=True)  # <-- tambahkan ini
+    filename = datetime.now().strftime("%Y%m%d%H%M%S_") + uploaded_file.name.replace(" ", "_")
+    filepath = os.path.join(IMAGE_DIR, filename)
+    image = Image.open(uploaded_file)
+    image.save(filepath)
+    return filepath
+
 def load_iklan():
     if os.path.exists(DATA_PATH):
         return pd.read_csv(DATA_PATH)

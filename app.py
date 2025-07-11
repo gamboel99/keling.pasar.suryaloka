@@ -46,33 +46,52 @@ with tab2:
                 cols = st.columns([1, 3])
 
                 # Gambar
-                gambar = str(row["gambar"]).strip() if "gambar" in row and pd.notna(row["gambar"]) else ""
-                if gambar and os.path.exists(gambar):
-                    cols[0].image(gambar, use_container_width=True)
-
-                # Data aman (cek kolom dan isi)
-                judul = str(row["judul"]).strip() if "judul" in row and pd.notna(row["judul"]) else "-"
-                harga = str(row["harga"]).strip() if "harga" in row and pd.notna(row["harga"]) else "-"
-                kategori = str(row["kategori"]).strip() if "kategori" in row and pd.notna(row["kategori"]) else "-"
-                deskripsi = str(row["deskripsi"]).strip() if "deskripsi" in row and pd.notna(row["deskripsi"]) else "-"
-                waktu = str(row["waktu"]).strip() if "waktu" in row and pd.notna(row["waktu"]) else "-"
-
-                cols[1].markdown(f"### {judul}")
-                cols[1].markdown(f"**Harga:** {harga}")
-                cols[1].markdown(f"**Kategori:** {kategori}")
-                cols[1].markdown(deskripsi)
-
-                # Kontak WA aman
                 try:
-                    kontak = str(row["kontak"]).strip() if "kontak" in row and pd.notna(row["kontak"]) else ""
+                    if os.path.exists(str(row["gambar"])):
+                        cols[0].image(str(row["gambar"]), use_container_width=True)
+                except:
+                    pass
+
+                # Judul
+                try:
+                    cols[1].markdown(f"### {str(row['judul'])}")
+                except:
+                    cols[1].markdown("### -")
+
+                # Harga
+                try:
+                    cols[1].markdown(f"**Harga:** {str(row['harga'])}")
+                except:
+                    cols[1].markdown("**Harga:** -")
+
+                # Kategori
+                try:
+                    cols[1].markdown(f"**Kategori:** {str(row['kategori'])}")
+                except:
+                    cols[1].markdown("**Kategori:** -")
+
+                # Deskripsi
+                try:
+                    cols[1].markdown(str(row['deskripsi']))
+                except:
+                    cols[1].markdown("-")
+
+                # Kontak WA
+                try:
+                    kontak = str(row['kontak']).strip()
                     if kontak and kontak.lower() != "nan":
                         nomor = kontak.replace("+", "").replace(" ", "")
-                        cols[1].markdown("**📞 Pemesanan:** Hubungi nomor berikut:")
+                        cols[1].markdown("**📞 Pemesanan:**")
                         cols[1].markdown(
                             f"[![WhatsApp](https://img.icons8.com/color/24/000000/whatsapp.png)](https://wa.me/{nomor})"
                         )
-                except Exception:
-                    cols[1].warning("Kontak tidak valid.")
+                except:
+                    pass
 
-                cols[1].caption(f"🕒 {waktu}")
+                # Waktu
+                try:
+                    cols[1].caption(f"🕒 {str(row['waktu'])}")
+                except:
+                    cols[1].caption("🕒 -")
+
                 st.markdown("---")

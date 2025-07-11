@@ -1,10 +1,15 @@
-
 import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
 
 st.set_page_config(page_title="Pasar Suryaloka Keling", layout="wide")
+
+# ✅ VERIFIKASI GOOGLE SEARCH CONSOLE
+st.markdown(
+    '<meta name="google-site-verification" content="google318b178cb3925b7b.html" />',
+    unsafe_allow_html=True
+)
 
 st.title("🛒 Pasar Suryaloka Keling")
 st.caption("Etalase Iklan Produk & Jasa Warga Desa Keling")
@@ -27,6 +32,7 @@ def save_data(entry):
 
 menu = st.sidebar.radio("Navigasi", ["📝 Posting Iklan", "🛍️ Etalase Pasar"])
 
+# ---------------- TAB POSTING ----------------
 if menu == "📝 Posting Iklan":
     st.subheader("Form Iklan Baru")
     with st.form("form_iklan"):
@@ -53,8 +59,9 @@ if menu == "📝 Posting Iklan":
             "kontak": kontak,
             "gambar": img_path
         })
-        st.success("Iklan berhasil disimpan!")
+        st.success("✅ Iklan berhasil disimpan!")
 
+# ---------------- TAB ETALASE ----------------
 if menu == "🛍️ Etalase Pasar":
     st.subheader("Etalase Iklan")
     df = load_data()
